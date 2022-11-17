@@ -6,11 +6,11 @@ instance.defaults.timeout = 6000;
 // 请求拦截器
 instance.interceptors.request.use(
   function (config) {
-    console.log(config);
+  
     return config
   },
   function (err) {
-    console.log(err);
+  
     return err
   }
 );
@@ -22,7 +22,7 @@ instance.interceptors.response.use(
     return response
   },
   function (err) {
-    console.log(err);
+  
     return err
   }
 );
