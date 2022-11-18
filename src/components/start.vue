@@ -1,10 +1,5 @@
 <template>
-  <Render3d
-    id="render3d"
-    ref="render3d"
-    class="render3d"
-    :clearColor="0x000000"
-  />
+  <Render3d id="render3d" ref="render3d" class="render3d" />
 </template>
 
 <script>
@@ -19,7 +14,7 @@ export default {
   },
   mounted() {
     this.init();
-    this.bg();
+    this.scene();
   },
   methods: {
     init() {
@@ -28,11 +23,11 @@ export default {
       this.threeD = threeD;
     },
     scene() {
-      // 先取消scene中的全部灯光
-      this.threeD.render3dCtx.ambientLight.visible = false;
-    },
-    bg() {
-      this.threeD.bg();
+      // 把bg的颜色换为黑色
+      this.threeD.blackBg();
+
+      // 取消scene中的全部灯光
+      this.threeD.closeAllLight();
     },
   },
 };
