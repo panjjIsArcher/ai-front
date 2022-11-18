@@ -1,11 +1,6 @@
 module.exports = {
-  extends: ["plugin:vue/essential", "eslint:recommended", "@vue/prettier"],
-  parserOptions: {
-    parser: "babel-eslint",
-  },
-  globals: {
-    wx: true,
-  },
+  extends: ["plugin:vue/essential", "eslint:recommended"],
+  
   rules: {
     "vue/multi-word-component-names": "off",
     "no-undef": "off",
