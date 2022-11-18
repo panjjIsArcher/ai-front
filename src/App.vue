@@ -1,12 +1,12 @@
 <template>
   <div id="app">
-    <test/>
+      <index/>
   </div>
 </template>
 <script>
-import test from '@/components/test'
+import Index from '@/views/index'
 export default {
-  components: { test },
+  components: {  Index  },
   
 }
 </script>
