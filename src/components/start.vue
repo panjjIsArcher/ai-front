@@ -26,8 +26,18 @@ export default {
       // 把bg的颜色换为黑色
       this.threeD.blackBg();
 
+      this.threeD.addControls()
+
       // 取消scene中的全部灯光
       this.threeD.closeAllLight();
+
+      this.threeD.enableRenderShadow();
+
+      this.threeD.addGround()
+
+      this.threeD.addLight()
+
+
     },
   },
 };
