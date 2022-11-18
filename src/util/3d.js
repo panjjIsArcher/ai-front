@@ -1,5 +1,5 @@
 import {
-  ACESFilmicToneMapping,
+  // ACESFilmicToneMapping,
   PCFSoftShadowMap,
   PlaneGeometry,
   Mesh,
@@ -32,7 +32,7 @@ export default class ThreeD {
     this.render3dCtx.directionalLight.intensity = 0;
   }
   addLight() {
-    const dirLight = new DirectionalLight(0xffffff, 10);
+    const dirLight = new DirectionalLight(0xffffff, 1);
     dirLight.position.set(-1, 1, 1);
 
     this.render3dCtx.addObject(dirLight);
@@ -57,8 +57,8 @@ export default class ThreeD {
   enableRenderShadow() {
     const { renderer } = this.render3dCtx;
     renderer.shadowMap.enabled = true; // 允许阴影
-    renderer.shadowMap.type = PCFSoftShadowMap;
-    renderer.toneMapping = ACESFilmicToneMapping;
+    renderer.shadowMap.type = PCFSoftShadowMap; // 更柔和 也更真实
+    // renderer.toneMapping = ACESFilmicToneMapping;
   }
   enableReceiveShadow(model) {
     model.receiveShadow = true;
