@@ -23,20 +23,19 @@ export default {
       this.threeD = threeD;
     },
     scene() {
-      // 把bg的颜色换为黑色
       this.threeD.blackBg();
 
-      this.threeD.addControls()
+      this.threeD.addControls();
 
-      // 取消scene中的全部灯光
       this.threeD.closeAllLight();
 
       this.threeD.enableRenderShadow();
 
-      this.threeD.addGround()
+      this.threeD.addGround();
 
-      this.threeD.addLight()
+      this.threeD.addBall()
 
+      this.threeD.addLight();
 
     },
   },
