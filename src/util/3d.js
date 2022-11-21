@@ -1,17 +1,14 @@
 import { models } from "@/config";
 import {
-  // ACESFilmicToneMapping,
   PCFSoftShadowMap,
+  Color,
+  SpotLight,
   PlaneGeometry,
   Mesh,
-  Color,
-  DirectionalLight,
-  DirectionalLightHelper,
-  DodecahedronGeometry,
   MeshStandardMaterial,
-  PointLight,
+  DoubleSide,
 } from "three";
-
+import { TWEEN } from "three/examples/jsm/libs/tween.module.min.js";
 import GlbLoader from "lesca-glb-loader";
 export default class ThreeD {
   constructor(render3dCtx) {
@@ -28,41 +25,13 @@ export default class ThreeD {
     this.render3dCtx.camera.position.set(2.99, 0.07, 0.23);
   }
   closeAllLight() {
-    this.render3dCtx.ambientLight.visible = false;
     this.render3dCtx.ambientLight.intensity = 0;
-
     this.render3dCtx.directionalLight.visible = false;
-    this.render3dCtx.directionalLight.intensity = 0;
-  }
-  async addModel() {}
-  addLight() {
-    const dirLight = new DirectionalLight(0xffffff, 1);
-    dirLight.position.set(-1, 1, 1);
-
-    this.render3dCtx.addObject(dirLight);
-
-    dirLight.castShadow = true; // 允许产生阴影
-
-    dirLight.shadow.mapSize.width = 10;
-    dirLight.shadow.mapSize.height = 10;
-
-    dirLight.shadow.camera.near = 1;
-    dirLight.shadow.camera.far = 10;
-    dirLight.shadow.camera.right = 15;
-    dirLight.shadow.camera.left = -15;
-    dirLight.shadow.camera.top = 15;
-    dirLight.shadow.camera.bottom = -15;
-    dirLight.shadow.mapSize.width = 1024;
-    dirLight.shadow.mapSize.height = 1024;
-
-    const dirLightHelper = new DirectionalLightHelper(dirLight, 10);
-    this.render3dCtx.addObject(dirLightHelper);
   }
   enableRenderShadow() {
     const { renderer } = this.render3dCtx;
     renderer.shadowMap.enabled = true; // 允许阴影
     renderer.shadowMap.type = PCFSoftShadowMap; // 更柔和 也更真实
-    // renderer.toneMapping = ACESFilmicToneMapping;
   }
   enableReceiveShadow(model) {
     model.receiveShadow = true;
@@ -72,39 +41,107 @@ export default class ThreeD {
     model.castShadow = true;
     return model;
   }
-  addGround() {
-    // 创建地面 方便看效果
-    const ground = new Mesh(
-      new PlaneGeometry(7, 7),
-      new MeshStandardMaterial({ color: 0xe4caa0 })
-    );
-    ground.name = "ground";
-    ground.position.z = -3;
-    ground.rotation.x = 0.985 * (-Math.PI / 2);
-    window.ground = ground;
-
-    this.enableReceiveShadow(ground);
-    this.render3dCtx.addObject(ground);
-  }
-  addBall() {
-    const ball = new Mesh(
-      new DodecahedronGeometry(0.1, 2),
-      new MeshStandardMaterial({ color: 0xff0000 })
-    );
-    ball.position.y = 0.1;
-    this.enableCreateShadow(ball);
-    this.render3dCtx.addObject(ball);
-  }
   async addModels() {
     const lightConfig = models.light;
-    const lightModel = await GlbLoader(lightConfig.src);
-    const model = lightModel.model;
-    this.render3dCtx.addObject(model)
+    const robotConfig = models.robot;
+    const fn = [GlbLoader(lightConfig.src), GlbLoader(robotConfig.src)];
+    const all = await Promise.all(fn);
+    const model = all[0].model;
+    model.name = "light-model";
+    model.traverse((node) => {
+      if (node.type === "Mesh" && node.name === "Obj3d66-635421-2-804") {
+        node.isScreen = true;
+        node.material.emissveIntensity = 0;
+      }
+    });
+    const robot = all[1].model;
+    robot.scale.setScalar(robotConfig.showConfig.scale);
+    robot.position.set(
+      robotConfig.showConfig.position.x,
+      robotConfig.showConfig.position.y,
+      robotConfig.showConfig.position.z
+    );
+    robot.rotation.y = Math.PI / 2;
+    robot.name = "robot";
+    this.render3dCtx.addObject(model);
+    this.render3dCtx.addObject(robot);
   }
   addPointLight() {
-    const light = new PointLight();
-    light.name = "point-light";
+    const lightModel = this.render3dCtx.getObject("light-model");
+    const light = new SpotLight(0xe3e3e3);
+    light.name = "spot-light";
     light.castShadow = true;
+    light.position.set(
+      lightModel.position.clone().x,
+      lightModel.position.clone().y,
+      lightModel.position.clone().z
+    );
+    light.distance = 5;
+    light.angle = 0.32;
+    light.penumbra = 0.2;
+    light.intensity = 0;
     this.render3dCtx.addObject(light);
+  }
+  updateCameraPosition(position = new Vector3()) {
+    this.render3dCtx.camera.position.x = position.x;
+    this.render3dCtx.camera.position.y = position.y;
+    this.render3dCtx.camera.position.z = position.z;
+  }
+  addGround() {
+    const ground = new Mesh(
+      new PlaneGeometry(3, 3),
+      new MeshStandardMaterial({ color: 0xe3e3e3, side: DoubleSide })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    ground.position.set(-0.4, -1.5, 0);
+    this.render3dCtx.addObject(ground);
+  }
+
+  addBeforeRenderHook() {
+    const tweenUpdate = () => {
+      TWEEN.update();
+    };
+    const isTweenExist = this.render3dCtx.beforeRenderHookList.some(
+      (e) => e.name === "tweenUpdate"
+    );
+    if (!isTweenExist) {
+      this.render3dCtx.addBeforeRenderHook(tweenUpdate);
+    }
+  }
+  async flash(
+    startOptions = {},
+    endOptions = {},
+    fn = () => {},
+    duration = 1,
+    repeat = 0
+  ) {
+    this.addBeforeRenderHook();
+    return new Promise((resolve) => {
+      const tween = new TWEEN.Tween(startOptions);
+      tween.easing(TWEEN.Easing.Linear.None);
+      tween.to(endOptions, duration * 1000);
+      tween.start();
+      tween.onUpdate((param) => {
+        fn(param);
+      });
+      if (repeat) {
+        tween.repeat();
+      }
+      tween.onComplete(() => {
+        this.render3dCtx.removeBeforeRenderHook("tweenUpdate");
+        resolve();
+      });
+    });
+  }
+  stopAnimaiton(model, animationName) {
+    this.render3dCtx.stopAnimaiton(model, animationName);
+  }
+  startAnimaiton(model, animationName) {
+    this.render3dCtx.playAnimation(model, {
+      animationName, // 为空时，播放默认的第一个动画
+      loop: true,
+      clampWhenFinished: true
+    });
   }
 }
