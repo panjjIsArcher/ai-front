@@ -1,3 +1,4 @@
+import { models } from "@/config";
 import {
   // ACESFilmicToneMapping,
   PCFSoftShadowMap,
@@ -8,8 +9,10 @@ import {
   DirectionalLightHelper,
   DodecahedronGeometry,
   MeshStandardMaterial,
- 
+  PointLight,
 } from "three";
+
+import GlbLoader from "lesca-glb-loader";
 export default class ThreeD {
   constructor(render3dCtx) {
     this.render3dCtx = render3dCtx;
@@ -31,6 +34,7 @@ export default class ThreeD {
     this.render3dCtx.directionalLight.visible = false;
     this.render3dCtx.directionalLight.intensity = 0;
   }
+  async addModel() {}
   addLight() {
     const dirLight = new DirectionalLight(0xffffff, 1);
     dirLight.position.set(-1, 1, 1);
@@ -90,5 +94,17 @@ export default class ThreeD {
     ball.position.y = 0.1;
     this.enableCreateShadow(ball);
     this.render3dCtx.addObject(ball);
+  }
+  async addModels() {
+    const lightConfig = models.light;
+    const lightModel = await GlbLoader(lightConfig.src);
+    const model = lightModel.model;
+    this.render3dCtx.addObject(model)
+  }
+  addPointLight() {
+    const light = new PointLight();
+    light.name = "point-light";
+    light.castShadow = true;
+    this.render3dCtx.addObject(light);
   }
 }

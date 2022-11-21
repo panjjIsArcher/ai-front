@@ -22,21 +22,20 @@ export default {
       const threeD = new ThreeD(render3dCtx);
       this.threeD = threeD;
     },
-    scene() {
-      this.threeD.blackBg();
+    async scene() {
+      this.threeD.blackBg(0xffffff);
 
       this.threeD.addControls();
 
-      this.threeD.closeAllLight();
+      // this.threeD.closeAllLight();
 
       this.threeD.enableRenderShadow();
 
-      this.threeD.addGround();
+      this.threeD.addPointLight()
 
-      this.threeD.addBall()
+      await this.threeD.addModels()
 
-      this.threeD.addLight();
-
+    
     },
   },
 };
