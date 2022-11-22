@@ -90,7 +90,7 @@ export default class ThreeD {
   addGround() {
     const ground = new Mesh(
       new PlaneGeometry(3, 3),
-      new MeshStandardMaterial({ color: 0xe3e3e3, side: DoubleSide })
+      new MeshStandardMaterial({ color: 0xf9f9f9, side: DoubleSide })
     );
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;

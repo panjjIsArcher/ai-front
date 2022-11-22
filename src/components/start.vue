@@ -29,10 +29,10 @@ export default {
       let end = {},
         start = {};
       if (desc) {
-        end = { spotIntensity: 1, amberIntensirty: 0.35 };
+        end = { spotIntensity: 7.5, amberIntensirty: 0.35 };
         start = { spotIntensity: 0, amberIntensirty: 0 };
       } else {
-        start = { spotIntensity: 1, amberIntensirty: 0.35 };
+        start = { spotIntensity: 7.5, amberIntensirty: 0.35 };
         end = { spotIntensity: 0, amberIntensirty: 0 };
       }
       const fn = (param) => {
@@ -75,6 +75,8 @@ export default {
       this.threeD.startAnimaiton(robot, "Walking");
 
       await this.flash(false);
+
+      this.$emit("ready")
     },
   },
 };
