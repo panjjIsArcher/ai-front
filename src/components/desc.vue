@@ -6,7 +6,7 @@
       :class="showIntelligent ? 'intelligent-show' : ''"
     >
       <p>intelligent</p>
-      <span class="arrows center-in-screen" v-if="showSlide">
+      <span class="arrows center-in-screen" v-if="showSlide" @click="start">
         <span
           class="arrow"
           v-for="i in arrows"
@@ -14,10 +14,10 @@
           :class="i.className"
         />
       </span>
-      <span class="bg-util robot"></span>
+      <span class="bg-util robot" />
     </div>
     <!-- 图片展示 -->
-    <div v-if="showPciture"></div>
+    <!-- <div v-if="showPciture"></div> -->
   </div>
 </template>
 <script lang="ts">
@@ -61,6 +61,10 @@ export default {
           this.currentIndex = 0;
         }
       }, 0.25 * 1000);
+    },
+    start() {
+      
+      this.$emit("start");
     },
   },
 };
