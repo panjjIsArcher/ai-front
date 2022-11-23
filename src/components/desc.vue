@@ -7,9 +7,12 @@
     >
       <p>intelligent</p>
       <span class="arrows center-in-screen" v-if="showSlide">
-        <span class="arrow"  />
-        <span class="arrow" />
-        <span class="arrow" />
+        <span
+          class="arrow"
+          v-for="i in arrows"
+          :key="i.className"
+          :class="i.className"
+        />
       </span>
       <span class="bg-util robot"></span>
     </div>
@@ -24,14 +27,41 @@ export default {
       showIntelligent: false,
       showPciture: false,
       showSlide: false,
+      arrows: [
+        { className: "full-white" },
+        { className: "half-white" },
+        { className: "grey" },
+      ],
+      currentIndex: 0,
     };
   },
-
-
   async mounted() {
     await new Promise((r) => setTimeout(r, 3000));
     this.showIntelligent = true;
     this.showSlide = true;
+
+    this.flash();
+  },
+  methods: {
+    flash() {
+      setInterval(() => {
+        if (this.currentIndex >= 0 && this.currentIndex < this.arrows.length) {
+          this.currentIndex++;
+          this.arrows = this.arrows.map((arrow, index) => {
+            if (index === this.currentIndex) {
+              arrow.className = "full-white";
+            } else if (index + 1 === this.currentIndex) {
+              arrow.className = "half-white";
+            } else {
+              arrow.className = "grey";
+            }
+            return arrow;
+          });
+        } else {
+          this.currentIndex = 0;
+        }
+      }, 0.25 * 1000);
+    },
   },
 };
 </script>
@@ -78,6 +108,15 @@ export default {
           78% 52%,
           47% 0
         );
+      }
+      .full-white {
+        opacity: 1;
+      }
+      .half-white {
+        opacity: 0.5;
+      }
+      .grey {
+        opacity: 0.25;
       }
     }
     .robot {
