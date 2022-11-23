@@ -1,28 +1,32 @@
 <template>
   <div class="index layer">
-    <Render3d id="render3d" ref="render3d" backgroundTransparent />
+    <start @ready="ready" />
+    <Describution v-if="showDesc"/> 
   </div>
 </template>
 
 <script>
-import Render3d, { getRender3dContext } from "web-render3d";
-import ThreeD from "@/util/3d";
+import Describution from "@/components/desc";
+import Start from "@/components/start";
+
 export default {
-  components: { Render3d },
+  components: { Start,Describution },
   data() {
     return {
-      threeD: null,
+      showDesc: true
     };
   },
-  mounted() {
-    this.init();
-  },
   methods: {
-    init() {
-      const render3dCtx = getRender3dContext("render3d");
-      const threeD = new ThreeD(render3dCtx);
-      this.threeD = threeD;
+    ready() {
+      this.showDesc = true;
+      
     },
   },
 };
 </script>
+<style scoped>
+.render3d {
+  height: 100%;
+  width: 100%;
+}
+</style>
