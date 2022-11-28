@@ -9,8 +9,8 @@
       <span class="arrows center-in-screen" v-if="showSlide" @click="start">
         <span
           class="arrow"
-          v-for="i in arrows"
-          :key="i.className"
+          v-for="(i,index) in arrows"
+          :key="index"
           :class="i.className"
         />
       </span>
